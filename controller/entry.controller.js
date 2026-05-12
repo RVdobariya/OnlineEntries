@@ -107,12 +107,10 @@ const controller = {
         !rate15 ||
         !dhaga
       ) {
-        return res
-          .status(400)
-          .json({
-            status: false,
-            message: "All required fields must be provided",
-          });
+        return res.status(400).json({
+          status: false,
+          message: "All required fields must be provided",
+        });
       }
 
       // Validate ObjectId fields
@@ -131,12 +129,6 @@ const controller = {
             .status(400)
             .json({ message: `${field} must be a valid ObjectId` });
         }
-      }
-
-      // Check if LOT NO already exists
-      const existingEntry = await Entry.findOne({ lotNo });
-      if (existingEntry) {
-        return res.status(400).json({ message: "LOT NO already exists" });
       }
 
       // Validate references
@@ -179,11 +171,9 @@ const controller = {
         !overlockPersonExists.role ||
         overlockPersonExists.role.name.toLowerCase() !== "overlock"
       ) {
-        return res
-          .status(400)
-          .json({
-            message: "Provided overlock person is not an overlock operator",
-          });
+        return res.status(400).json({
+          message: "Provided overlock person is not an overlock operator",
+        });
       }
 
       const machineExists = await Machine.findById(machineNo);
@@ -282,10 +272,7 @@ const controller = {
       const endDate = new Date(year, monthNumber, 0, 23, 59, 59, 999);
 
       const entries = await Entry.find({
-        date: {
-          $gte: startDate,
-          $lte: endDate,
-        },
+        period: periodId,
       })
         .populate("design", "name")
         .populate("color", "name")
@@ -299,7 +286,9 @@ const controller = {
       // Group entries by date
       const entriesByDate = {};
       entries.forEach((entry) => {
-        const dateKey = entry.date.toLocaleDateString("en-GB").replace(/\//g, "-");
+        const dateKey = entry.date
+          .toLocaleDateString("en-GB")
+          .replace(/\//g, "-");
         if (!entriesByDate[dateKey]) {
           entriesByDate[dateKey] = [];
         }
@@ -311,12 +300,13 @@ const controller = {
         (sum, entry) => sum + (entry.pcs || 0),
         0,
       );
-      const totalRate = entries.reduce(
-        (sum, entry) => sum + (entry.rate || 0),
+
+      const totalAmountOfSigner = entries.reduce(
+        (sum, entry) => sum + (entry.pcs || 0) * (entry.rate || 0),
         0,
       );
-      const totalRate15 = entries.reduce(
-        (sum, entry) => sum + (entry.rate15 || 0),
+      const totalAmountOfOberLock = entries.reduce(
+        (sum, entry) => sum + (entry.pcs || 0) * (entry.rate || 0),
         0,
       );
 
@@ -326,8 +316,8 @@ const controller = {
         summary: {
           totalEntries,
           totalPcs,
-          totalRate,
-          totalRate15,
+          totalAmountOfSigner,
+          totalAmountOfOberLock,
         },
         entries: entriesByDate,
       });
@@ -353,11 +343,9 @@ const controller = {
       }
 
       if (!allowedRoles.includes(role)) {
-        return res
-          .status(400)
-          .json({
-            message: "Role must be one of singer, overlockPerson, or dhaga",
-          });
+        return res.status(400).json({
+          message: "Role must be one of singer, overlockPerson, or dhaga",
+        });
       }
 
       const period = await Period.findById(periodId);
@@ -365,27 +353,46 @@ const controller = {
         return res.status(404).json({ message: "Period not found" });
       }
 
-      const { year, month: monthNumber } = period;
-      const startDate = new Date(year, monthNumber - 1, 1);
-      const endDate = new Date(year, monthNumber, 0, 23, 59, 59, 999);
+      const groupStage = {
+        _id: `$${role}`,
+        totalEntries: { $sum: 1 },
+        totalPcs: { $sum: "$pcs" },
+      };
+
+      if (role !== "dhaga") {
+        groupStage.totalAmount = {
+          $sum: {
+            $cond: {
+              if: { $eq: [role, "singer"] },
+              then: { $multiply: ["$pcs", "$rate"] },
+              else: { $multiply: ["$pcs", "$rate15"] },
+            },
+          },
+        };
+      }
+
+      const projectStage = {
+        _id: 0,
+        personId: "$_id",
+        name: {
+          $concat: ["$person.firstName", " ", "$person.lastName"],
+        },
+        totalEntries: 1,
+        totalPcs: 1,
+      };
+
+      if (role !== "dhaga") {
+        projectStage.totalAmount = 1;
+      }
 
       const aggregation = await Entry.aggregate([
         {
           $match: {
-            date: {
-              $gte: startDate,
-              $lte: endDate,
-            },
+            period: new mongoose.Types.ObjectId(periodId),
           },
         },
         {
-          $group: {
-            _id: `$${role}`,
-            totalEntries: { $sum: 1 },
-            totalPcs: { $sum: "$pcs" },
-            totalRate: { $sum: "$rate" },
-            totalRate15: { $sum: "$rate15" },
-          },
+          $group: groupStage,
         },
         {
           $lookup: {
@@ -402,17 +409,7 @@ const controller = {
           },
         },
         {
-          $project: {
-            _id: 0,
-            personId: "$_id",
-            name: {
-              $concat: ["$person.firstName", " ", "$person.lastName"],
-            },
-            totalEntries: 1,
-            totalPcs: 1,
-            totalRate: 1,
-            totalRate15: 1,
-          },
+          $project: projectStage,
         },
       ]);
 
@@ -446,17 +443,10 @@ const controller = {
         return res.status(404).json({ message: "Period not found" });
       }
 
-      const { year, month: monthNumber } = period;
-      const startDate = new Date(year, monthNumber - 1, 1);
-      const endDate = new Date(year, monthNumber, 0, 23, 59, 59, 999);
-
       const aggregation = await Entry.aggregate([
         {
           $match: {
-            date: {
-              $gte: startDate,
-              $lte: endDate,
-            },
+            period: new mongoose.Types.ObjectId(periodId),
           },
         },
         {
@@ -464,8 +454,11 @@ const controller = {
             _id: "$overlockPerson",
             totalEntries: { $sum: 1 },
             totalPcs: { $sum: "$pcs" },
-            totalRate: { $sum: "$rate" },
-            totalRate15: { $sum: "$rate15" },
+            totalAmount: {
+              $sum: {
+                $multiply: ["$pcs", "$rate15"],
+              },
+            },
           },
         },
         {
@@ -491,8 +484,8 @@ const controller = {
             },
             totalEntries: 1,
             totalPcs: 1,
-            totalRate: 1,
-            totalRate15: 1,
+
+            totalAmount: 1,
           },
         },
       ]);
@@ -533,11 +526,9 @@ const controller = {
       }
 
       if (!allowedRoles.includes(role)) {
-        return res
-          .status(400)
-          .json({
-            message: "Role must be one of singer, overlockPerson, or dhaga",
-          });
+        return res.status(400).json({
+          message: "Role must be one of singer, overlockPerson, or dhaga",
+        });
       }
 
       const period = await Period.findById(periodId);
@@ -550,9 +541,8 @@ const controller = {
       const endDate = new Date(year, monthNumber, 0, 23, 59, 59, 999);
 
       const filter = {
-        date: {
-          $gte: startDate,
-          $lte: endDate,
+        period: {
+          $eq: new mongoose.Types.ObjectId(periodId),
         },
         [role]: new mongoose.Types.ObjectId(userId),
       };
@@ -570,7 +560,9 @@ const controller = {
       // Group entries by date
       const entriesByDate = {};
       entries.forEach((entry) => {
-        const dateKey = entry.date.toLocaleDateString("en-GB").replace(/\//g, "-");
+        const dateKey = entry.date
+          .toLocaleDateString("en-GB")
+          .replace(/\//g, "-");
         if (!entriesByDate[dateKey]) {
           entriesByDate[dateKey] = [];
         }
@@ -582,14 +574,17 @@ const controller = {
         (sum, entry) => sum + (entry.pcs || 0),
         0,
       );
-      const totalRate = entries.reduce(
-        (sum, entry) => sum + (entry.rate || 0),
-        0,
-      );
-      const totalRate15 = entries.reduce(
-        (sum, entry) => sum + (entry.rate15 || 0),
-        0,
-      );
+
+      // Calculate totalAmount based on role
+      const totalAmount = entries.reduce((sum, entry) => {
+        const pcs = entry.pcs || 0;
+        if (role === "singer") {
+          return sum + pcs * (entry.rate || 0);
+        } else if (role === "overlockPerson") {
+          return sum + pcs * (entry.rate15 || 0);
+        }
+        return sum;
+      }, 0);
 
       res.status(200).json({
         period: period.name,
@@ -598,8 +593,7 @@ const controller = {
         summary: {
           totalEntries,
           totalPcs,
-          totalRate,
-          totalRate15,
+          totalAmount,
         },
         entries: entriesByDate,
       });
