@@ -7,7 +7,7 @@ const router = Router();
 
 router.route("/addEntry").post(authenticateToken, requireAdmin, controller.addEntry);
 router.route("/deleteEntry/:id").delete(authenticateToken, requireAdmin, controller.deleteEntry);
-router.route("/getEntriesByMonth").get(authenticateToken, controller.getEntriesByPeriod);
+router.route("/getEntriesByMonth").get(authenticateToken, controller.getEntriesByMonth);
 router.route("/getRoleTotalsByPeriod").get(authenticateToken, controller.getRoleTotalsByPeriod);
 router.route("/getOverlockTotalsByPeriod").get(authenticateToken, controller.getOverlockTotalsByPeriod);
 router.route("/getEntriesByUserRole").get(authenticateToken, controller.getEntriesByUserRole);

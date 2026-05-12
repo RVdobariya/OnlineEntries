@@ -27,7 +27,11 @@ const parseMonthQuery = (monthQuery) => {
     return null;
   }
 
-  const parts = monthQuery.trim().toLowerCase().split(/[-/]/).map((str) => str.trim());
+  const parts = monthQuery
+    .trim()
+    .toLowerCase()
+    .split(/[-/]/)
+    .map((str) => str.trim());
   if (parts.length !== 2) {
     return null;
   }
@@ -40,7 +44,9 @@ const parseMonthQuery = (monthQuery) => {
       return monthNames[part];
     }
     const numeric = Number(part);
-    return Number.isInteger(numeric) && numeric >= 1 && numeric <= 12 ? numeric : null;
+    return Number.isInteger(numeric) && numeric >= 1 && numeric <= 12
+      ? numeric
+      : null;
   };
 
   const firstAsMonth = parseMonthPart(parts[0]);
@@ -68,18 +74,62 @@ const parseMonthQuery = (monthQuery) => {
 const controller = {
   addEntry: async (req, res) => {
     try {
-      const { date,period, lotNo, pcs, design, color, type, singer, rate, machineNo, overlockPerson, rate15, dhaga, note } = req.body;
+      const {
+        date,
+        period,
+        lotNo,
+        pcs,
+        design,
+        color,
+        type,
+        singer,
+        rate,
+        machineNo,
+        overlockPerson,
+        rate15,
+        dhaga,
+        note,
+      } = req.body;
 
       // Validation - Required fields
-      if (!date || !period ||  !lotNo || !pcs || !design || !color || !type || !singer || !rate || !machineNo || !overlockPerson || !rate15 || !dhaga) {
-        return res.status(400).json({ status : false, message: "All required fields must be provided" });
+      if (
+        !date ||
+        !period ||
+        !lotNo ||
+        !pcs ||
+        !design ||
+        !color ||
+        !type ||
+        !singer ||
+        !rate ||
+        !machineNo ||
+        !overlockPerson ||
+        !rate15 ||
+        !dhaga
+      ) {
+        return res
+          .status(400)
+          .json({
+            status: false,
+            message: "All required fields must be provided",
+          });
       }
 
       // Validate ObjectId fields
-      const objectIdFields = { design, color, type, singer, machineNo, overlockPerson, dhaga };
+      const objectIdFields = {
+        design,
+        color,
+        type,
+        singer,
+        machineNo,
+        overlockPerson,
+        dhaga,
+      };
       for (const [field, value] of Object.entries(objectIdFields)) {
         if (!mongoose.Types.ObjectId.isValid(value)) {
-          return res.status(400).json({ message: `${field} must be a valid ObjectId` });
+          return res
+            .status(400)
+            .json({ message: `${field} must be a valid ObjectId` });
         }
       }
 
@@ -109,16 +159,31 @@ const controller = {
       if (!singerExists) {
         return res.status(400).json({ message: "Singer not found" });
       }
-      if(!singerExists.role || singerExists.role.name.toLowerCase() !== "singer") {
-        return res.status(400).json({ message: "Provided singer is not a singer" });
+      if (
+        !singerExists.role ||
+        singerExists.role.name.toLowerCase() !== "singer"
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Provided singer is not a singer" });
       }
 
-      const overlockPersonExists = await User.findById(overlockPerson).populate("role", "name");
+      const overlockPersonExists = await User.findById(overlockPerson).populate(
+        "role",
+        "name",
+      );
       if (!overlockPersonExists) {
         return res.status(400).json({ message: "Overlock person not found" });
       }
-      if(!overlockPersonExists.role || overlockPersonExists.role.name.toLowerCase() !== "overlock") {
-        return res.status(400).json({ message: "Provided overlock person is not an overlock operator" });
+      if (
+        !overlockPersonExists.role ||
+        overlockPersonExists.role.name.toLowerCase() !== "overlock"
+      ) {
+        return res
+          .status(400)
+          .json({
+            message: "Provided overlock person is not an overlock operator",
+          });
       }
 
       const machineExists = await Machine.findById(machineNo);
@@ -130,8 +195,13 @@ const controller = {
       if (!dhagaExists) {
         return res.status(400).json({ message: "Dhaga user not found" });
       }
-      if(!dhagaExists.role || dhagaExists.role.name.toLowerCase() !== "dhaga") {
-        return res.status(400).json({ message: "Provided dhaga user is not a dhaga operator" });
+      if (
+        !dhagaExists.role ||
+        dhagaExists.role.name.toLowerCase() !== "dhaga"
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Provided dhaga user is not a dhaga operator" });
       }
 
       // Create new entry
@@ -155,9 +225,14 @@ const controller = {
       await newEntry.save();
 
       // Populate all references before returning
-      await newEntry.populate(["design", "color", "type", "singer", "machineNo", "overlockPerson"], "name");
+      await newEntry.populate(
+        ["design", "color", "type", "singer", "machineNo", "overlockPerson"],
+        "name",
+      );
 
-      res.status(201).json({ message: "Entry added successfully", entry: newEntry });
+      res
+        .status(201)
+        .json({ message: "Entry added successfully", entry: newEntry });
     } catch (error) {
       console.error("Error adding entry:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -182,7 +257,7 @@ const controller = {
     }
   },
 
-  getEntriesByPeriod: async (req, res) => {
+  getEntriesByMonth: async (req, res) => {
     try {
       const { periodId } = req.query;
 
@@ -191,7 +266,9 @@ const controller = {
       }
 
       if (!mongoose.Types.ObjectId.isValid(periodId)) {
-        return res.status(400).json({ message: "Period ID must be a valid ObjectId" });
+        return res
+          .status(400)
+          .json({ message: "Period ID must be a valid ObjectId" });
       }
 
       // Find period by ID
@@ -219,10 +296,29 @@ const controller = {
         .populate("dhaga", "firstName lastName")
         .sort({ date: 1 });
 
+      // Group entries by date
+      const entriesByDate = {};
+      entries.forEach((entry) => {
+        const dateKey = entry.date.toLocaleDateString("en-GB").replace(/\//g, "-");
+        if (!entriesByDate[dateKey]) {
+          entriesByDate[dateKey] = [];
+        }
+        entriesByDate[dateKey].push(entry);
+      });
+
       const totalEntries = entries.length;
-      const totalPcs = entries.reduce((sum, entry) => sum + (entry.pcs || 0), 0);
-      const totalRate = entries.reduce((sum, entry) => sum + (entry.rate || 0), 0);
-      const totalRate15 = entries.reduce((sum, entry) => sum + (entry.rate15 || 0), 0);
+      const totalPcs = entries.reduce(
+        (sum, entry) => sum + (entry.pcs || 0),
+        0,
+      );
+      const totalRate = entries.reduce(
+        (sum, entry) => sum + (entry.rate || 0),
+        0,
+      );
+      const totalRate15 = entries.reduce(
+        (sum, entry) => sum + (entry.rate15 || 0),
+        0,
+      );
 
       res.status(200).json({
         period: period.name,
@@ -233,7 +329,7 @@ const controller = {
           totalRate,
           totalRate15,
         },
-        entries,
+        entries: entriesByDate,
       });
     } catch (error) {
       console.error("Error fetching entries by period:", error);
@@ -251,11 +347,17 @@ const controller = {
       }
 
       if (!mongoose.Types.ObjectId.isValid(periodId)) {
-        return res.status(400).json({ message: "Period ID must be a valid ObjectId" });
+        return res
+          .status(400)
+          .json({ message: "Period ID must be a valid ObjectId" });
       }
 
       if (!allowedRoles.includes(role)) {
-        return res.status(400).json({ message: "Role must be one of singer, overlockPerson, or dhaga" });
+        return res
+          .status(400)
+          .json({
+            message: "Role must be one of singer, overlockPerson, or dhaga",
+          });
       }
 
       const period = await Period.findById(periodId);
@@ -334,7 +436,9 @@ const controller = {
       }
 
       if (!mongoose.Types.ObjectId.isValid(periodId)) {
-        return res.status(400).json({ message: "Period ID must be a valid ObjectId" });
+        return res
+          .status(400)
+          .json({ message: "Period ID must be a valid ObjectId" });
       }
 
       const period = await Period.findById(periodId);
@@ -413,7 +517,9 @@ const controller = {
       }
 
       if (!mongoose.Types.ObjectId.isValid(periodId)) {
-        return res.status(400).json({ message: "Period ID must be a valid ObjectId" });
+        return res
+          .status(400)
+          .json({ message: "Period ID must be a valid ObjectId" });
       }
 
       if (!userId) {
@@ -421,11 +527,17 @@ const controller = {
       }
 
       if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: "User ID must be a valid ObjectId" });
+        return res
+          .status(400)
+          .json({ message: "User ID must be a valid ObjectId" });
       }
 
       if (!allowedRoles.includes(role)) {
-        return res.status(400).json({ message: "Role must be one of singer, overlockPerson, or dhaga" });
+        return res
+          .status(400)
+          .json({
+            message: "Role must be one of singer, overlockPerson, or dhaga",
+          });
       }
 
       const period = await Period.findById(periodId);
@@ -455,10 +567,29 @@ const controller = {
         .populate("dhaga", "firstName lastName")
         .sort({ date: 1 });
 
+      // Group entries by date
+      const entriesByDate = {};
+      entries.forEach((entry) => {
+        const dateKey = entry.date.toLocaleDateString("en-GB").replace(/\//g, "-");
+        if (!entriesByDate[dateKey]) {
+          entriesByDate[dateKey] = [];
+        }
+        entriesByDate[dateKey].push(entry);
+      });
+
       const totalEntries = entries.length;
-      const totalPcs = entries.reduce((sum, entry) => sum + (entry.pcs || 0), 0);
-      const totalRate = entries.reduce((sum, entry) => sum + (entry.rate || 0), 0);
-      const totalRate15 = entries.reduce((sum, entry) => sum + (entry.rate15 || 0), 0);
+      const totalPcs = entries.reduce(
+        (sum, entry) => sum + (entry.pcs || 0),
+        0,
+      );
+      const totalRate = entries.reduce(
+        (sum, entry) => sum + (entry.rate || 0),
+        0,
+      );
+      const totalRate15 = entries.reduce(
+        (sum, entry) => sum + (entry.rate15 || 0),
+        0,
+      );
 
       res.status(200).json({
         period: period.name,
@@ -470,7 +601,7 @@ const controller = {
           totalRate,
           totalRate15,
         },
-        entries,
+        entries: entriesByDate,
       });
     } catch (error) {
       console.error("Error fetching entries by user role:", error);

@@ -14,7 +14,6 @@ const entrySchema = mongoose.Schema(
     lotNo: {
       type: String,
       required: true,
-      unique: true,
     },
     pcs: {
       type: Number,

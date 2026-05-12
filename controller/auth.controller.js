@@ -16,11 +16,11 @@ const comparePasswords = (password, hash) => {
 const authController = {
   register: async (req, res) => {
     try {
-      const { firstName, lastName, mobileNumber, email, password, confirmPassword, roleId } = req.body;
+      const { firstName, lastName, mobileNumber, password, confirmPassword, roleId } = req.body;
 
       // Validation
-      if (!firstName || !lastName || !email || !password || !confirmPassword || !mobileNumber) {
-        return res.status(400).json({ message: "First name, last name, email, mobile number, password, and confirm password are required" });
+      if (!firstName || !lastName || !password || !confirmPassword || !mobileNumber) {
+        return res.status(400).json({ message: "First name, last name, mobile number, password, and confirm password are required" });
       }
 
       if (password !== confirmPassword) {
@@ -31,7 +31,7 @@ const authController = {
         return res.status(400).json({ message: "Password must be at least 6 characters" });
       }
 
-      const normalizedEmail = email.toLowerCase().trim();
+      const normalizedEmail = email ? email.toLowerCase().trim() : null;
       const existingUser = await User.findOne({
         $or: [
           mobileNumber ? { mobileNumber } : null,
