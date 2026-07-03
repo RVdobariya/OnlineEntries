@@ -231,6 +231,76 @@ const controller = {
     }
   },
 
+  getEntriesByPressGalaUser: async (req, res) => {
+    try {
+      const { periodId, userId } = req.query;
+
+      if (!periodId) {
+        return res.status(400).json({ message: "Period ID is required" });
+      }
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(periodId)) {
+        return res.status(400).json({ message: "Period ID must be a valid ObjectId" });
+      }
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: "User ID must be a valid ObjectId" });
+      }
+
+      const period = await Period.findById(periodId);
+      if (!period) {
+        return res.status(404).json({ message: "Period not found" });
+      }
+
+      const user = await User.findById(userId).populate("role", "name");
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const entries = await PressGalaEntry.find({
+        period: new mongoose.Types.ObjectId(periodId),
+        name: new mongoose.Types.ObjectId(userId),
+        isActive: true,
+      })
+        .populate("name", "firstName lastName")
+        .sort({ date: 1 });
+
+      const entriesByDate = {};
+      let totalPcs = 0;
+      let totalAmount = 0;
+
+      entries.forEach((entry) => {
+        const dateKey = new Date(entry.date)
+          .toLocaleDateString("en-GB")
+          .replace(/\//g, "-");
+
+        if (!entriesByDate[dateKey]) {
+          entriesByDate[dateKey] = [];
+        }
+        entriesByDate[dateKey].push(entry);
+        totalPcs += entry.pcs || 0;
+        totalAmount += entry.total || 0;
+      });
+
+      res.status(200).json({
+        period: period.name,
+        userId,
+        userName: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : undefined,
+        summary: {
+          totalEntries: entries.length,
+          totalPcs,
+          totalAmount,
+        },
+        entries: entriesByDate,
+      });
+    } catch (error) {
+      console.error("Error fetching press gala entries by user:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
   deleteEntry: async (req, res) => {
     try {
       const { id } = req.params;
