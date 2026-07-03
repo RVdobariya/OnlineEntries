@@ -7,6 +7,9 @@ import typeRoutes from './type.route.js';
 import machineRoutes from './machine.route.js';
 import entryRoutes from './entry.route.js';
 import periodRoutes from './period.route.js';
+import lotNoRoutes from './lot_no.route.js';
+import pressGalaRoutes from './press_gala.route.js';
+
 
 const router = Router();
 
@@ -18,5 +21,7 @@ router.use('/type', typeRoutes);
 router.use('/machine', machineRoutes);
 router.use('/entry', entryRoutes);
 router.use('/period', periodRoutes);
+router.use('/lotNo', lotNoRoutes);
+router.use('/pressGala', pressGalaRoutes);
 
 export default router;

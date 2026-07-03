@@ -6,10 +6,15 @@ const router = Router();
 
 
 router.route("/addEntry").post(authenticateToken, requireAdmin, controller.addEntry);
-router.route("/deleteEntry/:id").delete(authenticateToken, requireAdmin, controller.deleteEntry);
+router.route("/editEntry/:id").post(authenticateToken, requireAdmin, controller.editEntry);
+router.route("/deleteEntry/:id").post(authenticateToken, requireAdmin, controller.deleteEntry);
 router.route("/getEntriesByMonth").get(authenticateToken, controller.getEntriesByMonth);
 router.route("/getRoleTotalsByPeriod").get(authenticateToken, controller.getRoleTotalsByPeriod);
 router.route("/getOverlockTotalsByPeriod").get(authenticateToken, controller.getOverlockTotalsByPeriod);
 router.route("/getEntriesByUserRole").get(authenticateToken, controller.getEntriesByUserRole);
+router.route("/getEntriesByPeriodAndLot").get(authenticateToken, controller.getEntriesByPeriodAndLot);
+router.route("/getDatesByPeriod").get(authenticateToken, controller.getDatesByPeriod);
+router.route("/getEntriesBySpecificDate").get(authenticateToken, controller.getEntriesBySpecificDate);
+router.route("/exportExcel").get(controller.exportAllEntriesToExcel);
 
 export default router;

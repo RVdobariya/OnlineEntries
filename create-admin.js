@@ -18,7 +18,7 @@ const createAdminUser = async () => {
     }
 
     // Admin user configuration
-    const adminMobileNumber = "9876543210";
+    const adminMobileNumber = "8511767722";
     const existingAdmin = await User.findOne({
       $or: [
         { mobileNumber: adminMobileNumber },

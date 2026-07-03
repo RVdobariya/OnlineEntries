@@ -11,13 +11,14 @@ const controller = {
         return res.status(400).json({ message: "Color already exists" });
       }
 
+
       // Validate hex code format
-      if (!/^#[0-9A-F]{6}$/i.test(hexCode)) {
+      if (hexCode && !/^#[0-9A-F]{6}$/i.test(hexCode)) {
         return res.status(400).json({ message: "Invalid hex color code format. Use #RRGGBB format." });
       }
 
       // Create a new color
-      const newColor = new Color({ name, hexCode: hexCode.toUpperCase() });
+      const newColor = new Color({ name, hexCode: hexCode ? hexCode.toUpperCase() : null});
       await newColor.save();
 
       res.status(201).json({ message: "Color added successfully", color: newColor });
@@ -60,6 +61,10 @@ const controller = {
       const existingColor = await Color.findById(id);
       if (!existingColor) {
         return res.status(404).json({ message: "Color not found" });
+      }
+
+      if(existingColor.isActive === false){
+        return res.status(403).json({ status : false, message: "Color is InActive." });
       }
 
       // Validate hex code format if provided

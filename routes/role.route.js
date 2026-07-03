@@ -9,7 +9,7 @@ router.route("/getAllRoles").get(authenticateToken, requireAdmin,controller.getA
 router.route("/getAllUsersWithRoles").get(authenticateToken, requireAdmin, controller.getAllUsersWithRoles);
 router.route("/getRoleById/:id").get(authenticateToken, requireAdmin, controller.getRoleById);
 router.route("/getUsersByRole/:roleId").get(authenticateToken, requireAdmin, controller.getUsersByRole);
-router.route("/updateRole/:id").put(authenticateToken, requireAdmin, controller.updateRole);
-router.route("/deleteRole/:id").delete(authenticateToken, requireAdmin, controller.deleteRole);
+router.route("/updateRole/:id").post(authenticateToken, requireAdmin, controller.updateRole);
+router.route("/deleteRole/:id").post(authenticateToken, requireAdmin, controller.deleteRole);
 
 export default router;

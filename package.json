@@ -2,6 +2,14 @@
   "name": "rto-backend",
   "version": "1.0.0",
   "description": "This is a backend with node.js for RTO questionary with multiple Countries and multiple supportive language",
+  "homepage": "https://github.com/RVdobariya/OnlineEntries#readme",
+  "bugs": {
+    "url": "https://github.com/RVdobariya/OnlineEntries/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RVdobariya/OnlineEntries.git"
+  },
   "license": "ISC",
   "author": "",
   "type": "module",
@@ -11,13 +19,17 @@
     "start": "nodemon index.js"
   },
   "dependencies": {
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "env": "^0.0.2",
+    "exceljs": "^4.4.0",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.5.0",
+    "node-cron": "^4.2.1",
     "nodemon": "^3.1.14",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "winston": "^3.19.0"
   }
 }

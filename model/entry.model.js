@@ -12,8 +12,9 @@ const entrySchema = mongoose.Schema(
       required: true,
     },
     lotNo: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "LotNo",
+      default: null,
     },
     pcs: {
       type: Number,
@@ -39,7 +40,6 @@ const entrySchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      // Singer should be a user (filter by role or type)
     },
     rate: {
       type: Number,
@@ -54,24 +54,25 @@ const entrySchema = mongoose.Schema(
     overlockPerson: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
-      // Singer should be a user (filter by role or type)
+      default: null,
     },
     rate15: {
       type: Number,
       required: true,
       min: 0,
-      // Rate for machine/dhaga
     },
     dhaga: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      // Dhaga should be a user (filter by dhaga type)
     },
     note: {
       type: String,
       required: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   {

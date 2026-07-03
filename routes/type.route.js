@@ -7,7 +7,7 @@ const router = Router();
 router.route("/addType").post(authenticateToken, requireAdmin, controller.addType);
 router.route("/getAllTypes").get(authenticateToken, requireAdmin, controller.getAllTypes);
 router.route("/getTypeById/:id").get(authenticateToken, requireAdmin, controller.getTypeById);
-router.route("/updateType/:id").put(authenticateToken, requireAdmin, controller.updateType);
-router.route("/deleteType/:id").delete(authenticateToken, requireAdmin, controller.deleteType);
+router.route("/updateType/:id").post(authenticateToken, requireAdmin, controller.updateType);
+router.route("/deleteType/:id").post(authenticateToken, requireAdmin, controller.deleteType);
 
 export default router;

@@ -1,0 +1,9 @@
+◇ injected env (2) from .env // tip: ⌘ enable debugging { debug: true }
+✅ MongoDB Connected Successfully
+❌ Admin user already exists
+Period '2026-05' already exists
+Scheduling next period creation for 2026-05-31T18:31:01.000Z
+Server is running on port \\.\pipe\32e8ed5b-12d2-4a7d-a1f0-c3e811cdbb9a
+Login attempt with mobileNumber: 9876543210 email: undefined
+Login attempt with mobileNumber: 9876543210 email: undefined
+Login attempt with mobileNumber: 9876543210 email: undefined

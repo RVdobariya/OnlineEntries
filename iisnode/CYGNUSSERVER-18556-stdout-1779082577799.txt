@@ -1,0 +1,21 @@
+◇ injected env (2) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+✅ MongoDB Connected Successfully
+❌ Admin user already exists
+Period '2026-05' already exists
+Scheduling next period creation for 2026-05-31T18:31:01.000Z
+Server is running on port \\.\pipe\2a5515bc-c288-47c1-89ad-8d8addd5aece
+Registering user with mobileNumber: 9876543210 email: adminserver@gmail.com
+Existing user with mobileNumber: 9876543210 is {
+  _id: new ObjectId('6a0874c847fb0e366cfc94aa'),
+  firstName: 'Admin',
+  lastName: 'User',
+  email: null,
+  mobileNumber: '9876543210',
+  password: 'e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7',
+  role: new ObjectId('69f196c9f7c542af500a0eab'),
+  isActive: true,
+  createdAt: 2026-05-16T13:44:40.789Z,
+  updatedAt: 2026-05-16T13:44:40.789Z,
+  __v: 0
+}
+Existing user with email: adminserver@gmail.com is null

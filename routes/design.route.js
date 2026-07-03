@@ -7,7 +7,7 @@ const router = Router();
 router.route("/addDesign").post(authenticateToken, requireAdmin, controller.addDesign);
 router.route("/getAllDesigns").get(authenticateToken, requireAdmin, controller.getAllDesigns);
 router.route("/getDesignById/:id").get(authenticateToken, requireAdmin, controller.getDesignById);
-router.route("/updateDesign/:id").put(authenticateToken, requireAdmin, controller.updateDesign);
-router.route("/deleteDesign/:id").delete(authenticateToken, requireAdmin, controller.deleteDesign);
+router.route("/updateDesign/:id").post(authenticateToken, requireAdmin, controller.updateDesign);
+router.route("/deleteDesign/:id").post(authenticateToken, requireAdmin, controller.deleteDesign);
 
 export default router;

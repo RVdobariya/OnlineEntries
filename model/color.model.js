@@ -9,8 +9,11 @@ const colorSchema = mongoose.Schema(
     },
     hexCode: {
       type: String,
-      required: true,
-      match: /^#[0-9A-F]{6}$/i, // Hex color validation
+      required: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   {

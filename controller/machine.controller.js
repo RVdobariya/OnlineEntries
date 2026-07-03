@@ -25,11 +25,13 @@ const controller = {
       let attachedOverlockUser = null;
       if (overlockPerson) {
         const user = await User.findById(overlockPerson).populate("role", "name");
+
+        console.log("Overlock user found:", user);
         if (!user) {
           return res.status(404).json({ message: "Overlock user not found" });
         }
 
-        if (!user.role || user.role.name.toLowerCase() !== "overlock") {
+        if (!user.role || user.role.name.toLowerCase() !== "overlockperson") {
           return res
             .status(400)
             .json({ message: "Provided user is not an overlock operator" });
@@ -101,7 +103,7 @@ const controller = {
   updateMachine: async (req, res) => {
     try {
       const { id } = req.params;
-      const { machineNo, name, status } = req.body;
+      const { machineNo, name, overlockPerson, status } = req.body;
 
       const machine = await Machine.findById(id);
       if (!machine) {
@@ -116,9 +118,28 @@ const controller = {
         }
       }
 
+      // Check overlock user if it's being updated
+      if (overlockPerson !== undefined) {
+        if (overlockPerson === null || overlockPerson === "") {
+          machine.overlockPerson = null;
+        } else {
+          const user = await User.findById(overlockPerson).populate("role", "name");
+          if (!user) {
+            return res.status(404).json({ message: "Overlock user not found" });
+          }
+
+          if (!user.role || user.role.name.toLowerCase() !== "overlockperson") {
+            return res
+              .status(400)
+              .json({ message: "Provided user is not an overlock operator" });
+          }
+          machine.overlockPerson = user._id;
+        }
+      }
+
       machine.machineNo = machineNo || machine.machineNo;
-      machine.name = name || machine.name;
-      machine.status = status || machine.status;
+      machine.name = name !== undefined ? name : machine.name;
+      machine.status = status !== undefined ? status : machine.status;
 
       await machine.save();
 

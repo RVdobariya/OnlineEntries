@@ -21,6 +21,10 @@ const machineSchema = mongoose.Schema(
       enum: ["active", "inactive", "maintenance"],
       default: "active",
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

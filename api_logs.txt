@@ -1,0 +1,109 @@
+
+[2026-05-16T13:46:01.106Z] AddUser API hit - 
+      firstName: Admin, 
+      lastName: Admin, 
+      mobileNumber: 9876543210, 
+      email: adminserver@gmail.com, 
+      password: Admin@123, 
+      confirmPassword: Admin@123, 
+      roleId: 69f196c9f7c542af500a0eab
+user found from mobile Number :
+ {
+  _id: new ObjectId('6a0874c847fb0e366cfc94aa'),
+  firstName: 'Admin',
+  lastName: 'User',
+  email: null,
+  mobileNumber: '9876543210',
+  password: 'e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7',
+  role: new ObjectId('69f196c9f7c542af500a0eab'),
+  isActive: true,
+  createdAt: 2026-05-16T13:44:40.789Z,
+  updatedAt: 2026-05-16T13:44:40.789Z,
+  __v: 0
+}
+user found from Email :
+ {
+  _id: new ObjectId('6a0874c847fb0e366cfc94aa'),
+  firstName: 'Admin',
+  lastName: 'User',
+  email: null,
+  mobileNumber: '9876543210',
+  password: 'e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7',
+  role: new ObjectId('69f196c9f7c542af500a0eab'),
+  isActive: true,
+  createdAt: 2026-05-16T13:44:40.789Z,
+  updatedAt: 2026-05-16T13:44:40.789Z,
+  __v: 0
+}
+[2026-05-16T13:46:22.130Z] AddUser API hit - 
+      firstName: Admin, 
+      lastName: Admin, 
+      mobileNumber: 9876543210, 
+      email: adminserver@gmail.com, 
+      password: Admin@123, 
+      confirmPassword: Admin@123, 
+      roleId: 69f196c9f7c542af500a0eab
+user found from mobile Number :
+ {
+  _id: new ObjectId('6a0874c847fb0e366cfc94aa'),
+  firstName: 'Admin',
+  lastName: 'User',
+  email: null,
+  mobileNumber: '9876543210',
+  password: 'e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7',
+  role: new ObjectId('69f196c9f7c542af500a0eab'),
+  isActive: true,
+  createdAt: 2026-05-16T13:44:40.789Z,
+  updatedAt: 2026-05-16T13:44:40.789Z,
+  __v: 0
+}
+user found from Email :
+ {
+  _id: new ObjectId('6a0874c847fb0e366cfc94aa'),
+  firstName: 'Admin',
+  lastName: 'User',
+  email: null,
+  mobileNumber: '9876543210',
+  password: 'e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7',
+  role: new ObjectId('69f196c9f7c542af500a0eab'),
+  isActive: true,
+  createdAt: 2026-05-16T13:44:40.789Z,
+  updatedAt: 2026-05-16T13:44:40.789Z,
+  __v: 0
+}
+[2026-05-16T13:55:29.817Z] AddUser API hit - 
+      firstName: Admin, 
+      lastName: Admin, 
+      mobileNumber: 9876543210, 
+      email: adminserver@gmail.com, 
+      password: Admin@123, 
+      confirmPassword: Admin@123, 
+      roleId: 69f196c9f7c542af500a0eab
+user found from mobile Number :
+ {
+  _id: new ObjectId('6a0874c847fb0e366cfc94aa'),
+  firstName: 'Admin',
+  lastName: 'User',
+  email: null,
+  mobileNumber: '9876543210',
+  password: 'e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7',
+  role: new ObjectId('69f196c9f7c542af500a0eab'),
+  isActive: true,
+  createdAt: 2026-05-16T13:44:40.789Z,
+  updatedAt: 2026-05-16T13:44:40.789Z,
+  __v: 0
+}
+user found from Email :
+ {
+  _id: new ObjectId('6a0874c847fb0e366cfc94aa'),
+  firstName: 'Admin',
+  lastName: 'User',
+  email: null,
+  mobileNumber: '9876543210',
+  password: 'e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7',
+  role: new ObjectId('69f196c9f7c542af500a0eab'),
+  isActive: true,
+  createdAt: 2026-05-16T13:44:40.789Z,
+  updatedAt: 2026-05-16T13:44:40.789Z,
+  __v: 0
+}

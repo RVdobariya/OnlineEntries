@@ -7,7 +7,7 @@ const router = Router();
 router.route("/addMachine").post(authenticateToken, requireAdmin, controller.addMachine);
 router.route("/getAllMachines").get(authenticateToken, requireAdmin, controller.getAllMachines);
 router.route("/getMachineById/:id").get(authenticateToken, requireAdmin, controller.getMachineById);
-router.route("/updateMachine/:id").put(authenticateToken, requireAdmin, controller.updateMachine);
-router.route("/deleteMachine/:id").delete(authenticateToken, requireAdmin, controller.deleteMachine);
+router.route("/updateMachine/:id").post(authenticateToken, requireAdmin, controller.updateMachine);
+router.route("/deleteMachine/:id").post(authenticateToken, requireAdmin, controller.deleteMachine);
 
 export default router;
