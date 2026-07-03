@@ -159,6 +159,78 @@ const controller = {
     }
   },
 
+  getPressGalaTotalsByPeriod: async (req, res) => {
+    try {
+      const { periodId } = req.query;
+
+      if (!periodId) {
+        return res.status(400).json({ message: "Period ID is required" });
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(periodId)) {
+        return res
+          .status(400)
+          .json({ message: "Period ID must be a valid ObjectId" });
+      }
+
+      const period = await Period.findById(periodId);
+      if (!period) {
+        return res.status(404).json({ message: "Period not found" });
+      }
+
+      const aggregation = await PressGalaEntry.aggregate([
+        {
+          $match: {
+            period: new mongoose.Types.ObjectId(periodId),
+            isActive: true,
+          },
+        },
+        {
+          $group: {
+            _id: "$name",
+            totalEntries: { $sum: 1 },
+            totalPcs: { $sum: "$pcs" },
+            totalAmount: { $sum: "$total" },
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "_id",
+            foreignField: "_id",
+            as: "person",
+          },
+        },
+        {
+          $unwind: {
+            path: "$person",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            personId: "$_id",
+            name: {
+              $concat: ["$person.firstName", " ", "$person.lastName"],
+            },
+            totalEntries: 1,
+            totalPcs: 1,
+            totalAmount: 1,
+          },
+        },
+      ]);
+
+      res.status(200).json({
+        period: period.name,
+        totals: aggregation,
+      });
+    } catch (error) {
+      console.error("Error fetching press gala totals by period:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
   deleteEntry: async (req, res) => {
     try {
       const { id } = req.params;

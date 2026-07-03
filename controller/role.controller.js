@@ -126,7 +126,7 @@ const controller = {
       // Build response with users grouped by role name as key
       const rolesWithUsers = {};
       for (const role of roles) {
-        const users = await User.find({ role: role._id }).select("-password");
+        const users = await User.find({ role: role._id, isActive: true }).select("-password");
         rolesWithUsers[role.name] = users;
       }
 
