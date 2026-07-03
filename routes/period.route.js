@@ -7,6 +7,7 @@ const router = Router();
 router.route("/addPeriod").post(authenticateToken, requireAdmin, controller.addPeriod);
 router.route("/getAllPeriods").get(authenticateToken, controller.getAllPeriods);
 router.route("/getPeriodById/:id").get(authenticateToken, controller.getPeriodById);
+router.route("/current").get(authenticateToken, controller.getCurrentPeriod);
 router.route("/updatePeriod/:id").post(authenticateToken, requireAdmin, controller.updatePeriod);
 router.route("/deletePeriod/:id").post(authenticateToken, requireAdmin, controller.deletePeriod);
 

@@ -71,6 +71,26 @@ const controller = {
     }
   },
 
+  getCurrentPeriod: async (req, res) => {
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+
+      const period = await Period.findOne({ year, month }).select("_id name year month");
+      if (!period) {
+        return res.status(404).json({ message: "Current period not found" });
+      }
+
+      const currentDate = `${now.getDate().toString().padStart(2, '0')}-${(month).toString().padStart(2, '0')}-${year}`;
+
+      res.status(200).json( { ...period.toObject(), currentDate } );
+    } catch (error) {
+      console.error("Error fetching current period:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
   updatePeriod: async (req, res) => {
     try {
       const { id } = req.params;
