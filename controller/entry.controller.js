@@ -991,6 +991,16 @@ const controller = {
     }
   },
 
+  getEntryCount: async (req, res) => {
+    try {
+      const totalEntries = await Entry.countDocuments();
+      res.status(200).json({ totalEntries });
+    } catch (error) {
+      console.error("Error fetching entry count:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
   exportAllEntriesToExcel: async (req, res) => {
     try {
       const entries = await Entry.find()

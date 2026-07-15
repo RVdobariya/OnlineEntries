@@ -15,6 +15,7 @@ router.route("/getEntriesByUserRole").get(authenticateToken, controller.getEntri
 router.route("/getEntriesByPeriodAndLot").get(authenticateToken, controller.getEntriesByPeriodAndLot);
 router.route("/getDatesByPeriod").get(authenticateToken, controller.getDatesByPeriod);
 router.route("/getEntriesBySpecificDate").get(authenticateToken, controller.getEntriesBySpecificDate);
+router.route("/getEntryCount").get(authenticateToken, controller.getEntryCount);
 router.route("/exportExcel").get(controller.exportAllEntriesToExcel);
 
 export default router;
